@@ -9,6 +9,9 @@
   "scripts": {
     "start": "ts-node src/server.ts",
     "dev": "./node_modules/nodemon/bin/nodemon.js",
+    "compose-up": "cd hasura && docker-compose up -d",
+    "compose-down": "cd hasura && docker-compose down",
+    "hasura": "cd hasura && hasura console",
     "test": "jest",
     "test:watch": "jest --watch"
   },
