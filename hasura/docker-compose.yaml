@@ -1,0 +1,18 @@
+version: '3.6'
+services:
+  dockerhost:
+    image: qoomon/docker-host
+    cap_add: [ 'NET_ADMIN', 'NET_RAW' ]
+    restart: on-failure
+
+  graphql-engine:
+    image: hasura/graphql-engine:v1.0.0-alpha37
+    ports:
+      - "8080:8080"
+    restart: always
+    depends_on: [ dockerhost ]
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgres@dockerhost:5432/postgres
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+      ## uncomment next line to set an access key
+      # HASURA_GRAPHQL_ACCESS_KEY: mysecretaccesskey
