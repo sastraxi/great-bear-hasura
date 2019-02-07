@@ -1,4 +1,11 @@
+### Design Decisions
 
+* stay as close to Hasura's 3-factor methodology as possible
+
+### Steps
+
+1. `curl -L https://github.com/hasura/graphql-engine/raw/master/cli/get.sh | bash`
+2. `hasura init`
 
 ### Resources
 
