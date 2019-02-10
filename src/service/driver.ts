@@ -3,6 +3,7 @@ import Bluebird from 'bluebird';
 import Express from 'express';
 
 const HR_TO_SEC = 3600;
+const KM_TO_M = 1000;
 
 import {
   LatLon,
@@ -15,6 +16,7 @@ import {
   getUserLocationQuery,
   setOrderLocationQuery,
   markOrderDeliveredQuery,
+  getProjectionQuery,
 } from './query';
 
 const {
@@ -28,6 +30,7 @@ export default (knex: Knex) => {
   const getUserLocation = getUserLocationQuery(knex);
   const setOrderLocation = setOrderLocationQuery(knex);
   const markOrderDelivered = markOrderDeliveredQuery(knex);
+  const getProjection = getProjectionQuery(knex);
 
   async (req: Express.Request, res: Express.Response) => {
     const order = orderFromRequest(req);
@@ -35,8 +38,13 @@ export default (knex: Knex) => {
     const userLocation = await getUserLocation(order.user_id)
       .then(fromCoord);
 
-    // TODO: generate a fake location based on the user's location using postgis
-    const restaurantLocation: LatLon = { lat: 0, lon: 0 };
+    // generate a fake location based on the user's location using postgis
+    const randomAngle = 360.0 * Math.random();
+    const restaurantLocation = await getProjection(
+      userLocation,
+      KM_TO_M * +DRIVER_DISTANCE_KM,
+      randomAngle,
+    ).then(fromCoord);
 
     // let hasura know everything is ok
     res.status(200).end();

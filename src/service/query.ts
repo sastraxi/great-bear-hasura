@@ -16,7 +16,7 @@ export const setOrderLocationQuery = (knex: Knex) =>
     knex.raw(`
       update order
       set
-        latlon = ST_SetSRID(ST_MakePoint(?, ?), 4326)
+        latlon = st_setsrid(st_makepoint(?, ?), 4326)
       where id = ?
     `, [latlon.lon, latlon.lat, orderId]);
 
@@ -28,3 +28,19 @@ export const markOrderDeliveredQuery = (knex: Knex) =>
         delivered_at = now()
       where id = ?
     `, [orderId]);
+
+export const getProjectionQuery = (knex: Knex) => (
+  latlon: LatLon,
+  distanceMetres: number,
+  degreesFromNorthCCW: number
+): PromiseLike<string> =>
+    knex.raw(`
+      select
+        st_asgeojson(
+          st_project(
+            st_setsrid(st_makepoint(?, ?), 4326),
+            ?,
+            radians(?)
+          )
+        ) as latlon
+    `, [latlon.lon, latlon.lat, distanceMetres, degreesFromNorthCCW])
