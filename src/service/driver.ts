@@ -6,7 +6,6 @@ const HR_TO_SEC = 3600;
 const KM_TO_M = 1000;
 
 import {
-  LatLon,
   orderFromRequest,
   fromCoord,
   mix,
