@@ -39,7 +39,7 @@ export default (knex: Knex) => {
     const cart = await knex.raw(`
       select
         c.user_id as userId,
-        sum(i.amount) as totalAmount
+        sum(i.amount * ci.quantity) as totalAmount
       from "cart" c
       inner join "cart_item" ci on ci.cart_id = c.id
       inner join "item" i on i.id = ci.item_id
