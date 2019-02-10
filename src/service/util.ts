@@ -1,5 +1,7 @@
 import Express from 'express';
 
+export const SEC_TO_MS = 1000;
+
 export interface LatLon {
   lat: number,
   lon: number,

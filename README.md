@@ -7,6 +7,11 @@
 1. `curl -L https://github.com/hasura/graphql-engine/raw/master/cli/get.sh | bash`
 2. `hasura init`
 
+
+### TODO
+
+* trigger to extract "public" charge information from stripe_charge and put into stripe_charge_public
+
 ### Resources
 
 * https://3factor.app

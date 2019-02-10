@@ -1,6 +1,8 @@
 import Knex from 'knex';
 import Bluebird from 'bluebird';
 import Express from 'express';
+import moment from 'moment';
+import _ from 'lodash';
 
 const HR_TO_SEC = 3600;
 const KM_TO_M = 1000;
@@ -9,13 +11,14 @@ import {
   orderFromRequest,
   fromCoord,
   mix,
+  SEC_TO_MS,
 } from './util';
 
 import {
   getUserLocationQuery,
   setOrderLocationQuery,
-  markOrderDeliveredQuery,
   getProjectionQuery,
+  sendEmailQuery,
 } from './query';
 
 const {
@@ -25,11 +28,14 @@ const {
   DRIVER_DROP_PACKAGE_SEC,
 } = process.env;
 
+/**
+ * After the food has been prepared, a drone flies it to the user's address.
+ */
 export default (knex: Knex) => {
   const getUserLocation = getUserLocationQuery(knex);
   const setOrderLocation = setOrderLocationQuery(knex);
-  const markOrderDelivered = markOrderDeliveredQuery(knex);
   const getProjection = getProjectionQuery(knex);
+  const sendEmail = sendEmailQuery(knex);
 
   async (req: Express.Request, res: Express.Response) => {
     const order = orderFromRequest(req);
@@ -50,21 +56,36 @@ export default (knex: Knex) => {
 
     // simulate sending a drone to the user's house then dropping their meal
     const deliverySeconds = HR_TO_SEC * (+DRIVER_DISTANCE_KM / +DRIVER_SPEED_KPH);
-    const step = 1000.0 / +DRIVER_UPDATE_HZ;
+    const step = 1.0 / +DRIVER_UPDATE_HZ;
     for (let t = 0.0; t < deliverySeconds; t += step) {
       const pct = t / deliverySeconds;
       const interpolated = mix(restaurantLocation, userLocation, pct);
       await Promise.all([
         setOrderLocation(order.id, interpolated),
-        Bluebird.delay(step),
+        Bluebird.delay(SEC_TO_MS * step),
       ])
     }
     await Promise.all([
       setOrderLocation(order.id, userLocation),
-      Bluebird.delay(1000 * +DRIVER_DROP_PACKAGE_SEC),
+      Bluebird.delay(SEC_TO_MS * +DRIVER_DROP_PACKAGE_SEC),
     ]);
   
     // mark / notify that the delivery has been completed
-    await markOrderDelivered(order.id);
+    const delivered_at = moment().toISOString();
+    await Promise.all([
+      sendEmail(
+        order.user_id,
+        'receipt',
+        {
+          order: {
+            ..._.pick(order, ['id', 'amount', 'created_at']),
+            delivered_at,
+          },
+        },
+      ),
+      knex('order')
+        .update({ delivered_at })
+        .where({ id: order.id }),
+    ]);
   };
 };
