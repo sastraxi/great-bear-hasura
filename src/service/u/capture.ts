@@ -4,8 +4,8 @@ import Stripe from 'stripe';
 import Express from 'express';
 
 import {
-  orderFromRequest,
-} from './util';
+  rowFromRequest,
+} from '../../util';
 
 const amountPaidToPoints = (cents: number) =>
   Math.ceil(cents / 100) * 10;
@@ -17,8 +17,8 @@ const amountPaidToPoints = (cents: number) =>
 export default (knex: Knex) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-  async (req: Express.Request, res: Express.Response) => {
-    const order = orderFromRequest(req);
+  return async (req: Express.Request, res: Express.Response) => {
+    const order = rowFromRequest(req);
     const existingCharge = JSON.parse(order.stripe_charge);
 
     // let hasura know everything is ok

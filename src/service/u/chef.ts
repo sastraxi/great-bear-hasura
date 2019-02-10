@@ -3,9 +3,9 @@ import Bluebird from 'bluebird';
 import Express from 'express';
 
 import {
-  orderFromRequest,
+  rowFromRequest,
   SEC_TO_MS,
-} from './util';
+} from '../../util';
 
 const {
   CHEF_PREP_SEC,
@@ -17,7 +17,7 @@ const {
  */
 export default (knex: Knex) =>
   async (req: Express.Request, res: Express.Response) => {
-    const order = orderFromRequest(req);
+    const order = rowFromRequest(req);
 
     // let hasura know everything is ok before we sleep
     res.status(200).end();

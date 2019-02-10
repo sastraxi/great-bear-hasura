@@ -1,6 +1,6 @@
 import Knex from 'knex';
 
-import { LatLon } from './util';
+import { LatLon } from '../util';
 
 export const getUserLocationQuery = (knex: Knex) =>
   (userId: number): PromiseLike<string> =>
@@ -10,7 +10,7 @@ export const getUserLocationQuery = (knex: Knex) =>
       from user
       where id = ?
     `, [userId]).then(rows => rows[0].latlon);
-
+  
 export const setOrderLocationQuery = (knex: Knex) => (
   orderId: number,
   latlon: LatLon,

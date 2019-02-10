@@ -5,16 +5,16 @@ import Express from 'express';
 import _ from 'lodash';
 
 import {
-  orderFromRequest,
+  rowFromRequest,
   SEC_TO_MS,
-} from './util';
+} from '../../util';
 
 const {
   WAITER_PREP_SEC,
   WAITER_VERIFICATION_RATE,
 } = process.env;
 
-import { sendEmailQuery } from './query';
+import { sendEmailQuery } from '../../db/query';
 
 /**
  * after the charge has been authorized,
@@ -24,8 +24,8 @@ export default (knex: Knex) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   const sendEmail = sendEmailQuery(knex);
 
-  async (req: Express.Request, res: Express.Response) => {
-    const order = orderFromRequest(req);
+  return async (req: Express.Request, res: Express.Response) => {
+    const order = rowFromRequest(req);
     const existingCharge = JSON.parse(order.stripe_charge);
 
     // let hasura know everything is ok before we sleep

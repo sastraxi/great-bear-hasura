@@ -8,18 +8,18 @@ const HR_TO_SEC = 3600;
 const KM_TO_M = 1000;
 
 import {
-  orderFromRequest,
+  rowFromRequest,
   fromCoord,
   mix,
   SEC_TO_MS,
-} from './util';
+} from '../../util';
 
 import {
   getUserLocationQuery,
   setOrderLocationQuery,
   getProjectionQuery,
   sendEmailQuery,
-} from './query';
+} from '../../db/query';
 
 const {
   DRIVER_DISTANCE_KM,
@@ -37,8 +37,8 @@ export default (knex: Knex) => {
   const getProjection = getProjectionQuery(knex);
   const sendEmail = sendEmailQuery(knex);
 
-  async (req: Express.Request, res: Express.Response) => {
-    const order = orderFromRequest(req);
+  return async (req: Express.Request, res: Express.Response) => {
+    const order = rowFromRequest(req);
 
     const userLocation = await getUserLocation(order.user_id)
       .then(fromCoord);
