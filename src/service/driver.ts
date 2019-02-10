@@ -7,6 +7,10 @@ import {
   fromCoord,
 } from './util';
 
+import {
+  getUserLocationQuery,
+} from './query';
+
 const {
   DRIVER_DISTANCE_KM,
   DRIVER_SPEED_KPH,
@@ -17,11 +21,7 @@ export default (knex: Knex) =>
   async (req: Express.Request, res: Express.Response) => {
     const order = orderFromRequest(req);
     
-    const userLocation = await knex.raw(`
-      select st_asgeojson(location.latlon) as latlon
-      from user where id = ?
-    `, [order.user_id])
-      .then(rows => rows[0].latlon)
+    const userLocation = await getUserLocationQuery(knex)(order.user_id)
       .then(fromCoord);
 
     // TODO: generate a fake location based on the user's location
