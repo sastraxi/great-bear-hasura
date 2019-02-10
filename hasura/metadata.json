@@ -1,0 +1,307 @@
+{
+  "functions": [],
+  "remote_schemas": [],
+  "tables": [
+    {
+      "table": "item",
+      "object_relationships": [],
+      "array_relationships": [
+        {
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "item_id",
+              "table": "cart_item"
+            }
+          },
+          "name": "cartItemsByitemId",
+          "comment": null
+        },
+        {
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "item_id",
+              "table": "order_item"
+            }
+          },
+          "name": "orderItemsByitemId",
+          "comment": null
+        }
+      ],
+      "insert_permissions": [],
+      "select_permissions": [],
+      "update_permissions": [],
+      "delete_permissions": [],
+      "event_triggers": []
+    },
+    {
+      "table": "cart_item",
+      "object_relationships": [
+        {
+          "using": {
+            "foreign_key_constraint_on": "cart_id"
+          },
+          "name": "cartBycartId",
+          "comment": null
+        },
+        {
+          "using": {
+            "foreign_key_constraint_on": "item_id"
+          },
+          "name": "itemByitemId",
+          "comment": null
+        }
+      ],
+      "array_relationships": [],
+      "insert_permissions": [],
+      "select_permissions": [],
+      "update_permissions": [],
+      "delete_permissions": [],
+      "event_triggers": []
+    },
+    {
+      "table": "order",
+      "object_relationships": [
+        {
+          "using": {
+            "foreign_key_constraint_on": "user_id"
+          },
+          "name": "userByuserId",
+          "comment": null
+        }
+      ],
+      "array_relationships": [
+        {
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "order_id",
+              "table": "order_item"
+            }
+          },
+          "name": "orderItemsByorderId",
+          "comment": null
+        }
+      ],
+      "insert_permissions": [],
+      "select_permissions": [],
+      "update_permissions": [],
+      "delete_permissions": [],
+      "event_triggers": [
+        {
+          "webhook_from_env": "WAITER_WEBHOOK_URL",
+          "headers": [],
+          "name": "waiter",
+          "definition": {
+            "insert": {
+              "columns": [
+                "id",
+                "user_id",
+                "stripe_charge",
+                "amount",
+                "iso_currency",
+                "failure_message",
+                "latlon",
+                "created_at",
+                "modified_at",
+                "failed_at",
+                "verified_at",
+                "captured_at",
+                "cooked_at",
+                "delivered_at"
+              ]
+            }
+          },
+          "retry_conf": {
+            "num_retries": 0,
+            "interval_sec": 10
+          }
+        },
+        {
+          "webhook": "CAPTURE_WEBHOOK_URL",
+          "headers": [],
+          "name": "capture",
+          "definition": {
+            "update": {
+              "columns": [
+                "verified_at"
+              ]
+            }
+          },
+          "retry_conf": {
+            "num_retries": 0,
+            "interval_sec": 10
+          }
+        },
+        {
+          "webhook": "CHEF_WEBHOOK_URL",
+          "headers": [],
+          "name": "chef",
+          "definition": {
+            "update": {
+              "columns": [
+                "captured_at"
+              ]
+            }
+          },
+          "retry_conf": {
+            "num_retries": 0,
+            "interval_sec": 10
+          }
+        },
+        {
+          "webhook": "DRIVER_WEBHOOK_URL",
+          "headers": [],
+          "name": "driver",
+          "definition": {
+            "update": {
+              "columns": [
+                "cooked_at"
+              ]
+            }
+          },
+          "retry_conf": {
+            "num_retries": 0,
+            "interval_sec": 10
+          }
+        }
+      ]
+    },
+    {
+      "table": "email",
+      "object_relationships": [
+        {
+          "using": {
+            "foreign_key_constraint_on": "user_id"
+          },
+          "name": "userByuserId",
+          "comment": null
+        }
+      ],
+      "array_relationships": [],
+      "insert_permissions": [],
+      "select_permissions": [],
+      "update_permissions": [],
+      "delete_permissions": [],
+      "event_triggers": [
+        {
+          "webhook": "EMAIL_WEBHOOK_URL",
+          "headers": [],
+          "name": "email",
+          "definition": {
+            "insert": {
+              "columns": [
+                "id",
+                "user_id",
+                "recipient",
+                "template",
+                "props",
+                "created_at",
+                "sent_at",
+                "sent_mime"
+              ]
+            }
+          },
+          "retry_conf": {
+            "num_retries": 4,
+            "interval_sec": 15
+          }
+        }
+      ]
+    },
+    {
+      "table": "order_item",
+      "object_relationships": [
+        {
+          "using": {
+            "foreign_key_constraint_on": "item_id"
+          },
+          "name": "itemByitemId",
+          "comment": null
+        },
+        {
+          "using": {
+            "foreign_key_constraint_on": "order_id"
+          },
+          "name": "orderByorderId",
+          "comment": null
+        }
+      ],
+      "array_relationships": [],
+      "insert_permissions": [],
+      "select_permissions": [],
+      "update_permissions": [],
+      "delete_permissions": [],
+      "event_triggers": []
+    },
+    {
+      "table": "cart",
+      "object_relationships": [
+        {
+          "using": {
+            "foreign_key_constraint_on": "user_id"
+          },
+          "name": "userByuserId",
+          "comment": null
+        }
+      ],
+      "array_relationships": [
+        {
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "cart_id",
+              "table": "cart_item"
+            }
+          },
+          "name": "cartItemsBycartId",
+          "comment": null
+        }
+      ],
+      "insert_permissions": [],
+      "select_permissions": [],
+      "update_permissions": [],
+      "delete_permissions": [],
+      "event_triggers": []
+    },
+    {
+      "table": "user",
+      "object_relationships": [],
+      "array_relationships": [
+        {
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "user_id",
+              "table": "cart"
+            }
+          },
+          "name": "cartsByuserId",
+          "comment": null
+        },
+        {
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "user_id",
+              "table": "email"
+            }
+          },
+          "name": "emailsByuserId",
+          "comment": null
+        },
+        {
+          "using": {
+            "foreign_key_constraint_on": {
+              "column": "user_id",
+              "table": "order"
+            }
+          },
+          "name": "ordersByuserId",
+          "comment": null
+        }
+      ],
+      "insert_permissions": [],
+      "select_permissions": [],
+      "update_permissions": [],
+      "delete_permissions": [],
+      "event_triggers": []
+    }
+  ],
+  "query_templates": []
+}
