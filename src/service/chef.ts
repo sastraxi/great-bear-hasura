@@ -12,8 +12,8 @@ const {
 } = process.env;
 
 /**
- * after the charge has been authorized,
- * the waiter receives and validates the order
+ * after the charge has been captured,
+ * the chef starts prepping the food
  */
 export default (knex: Knex) =>
   async (req: Express.Request, res: Express.Response) => {
