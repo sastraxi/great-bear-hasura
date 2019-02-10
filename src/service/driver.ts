@@ -2,39 +2,62 @@ import Knex from 'knex';
 import Bluebird from 'bluebird';
 import Express from 'express';
 
+const HR_TO_SEC = 3600;
+
 import {
+  LatLon,
   orderFromRequest,
   fromCoord,
+  mix,
 } from './util';
 
 import {
   getUserLocationQuery,
+  setOrderLocationQuery,
+  markOrderDeliveredQuery,
 } from './query';
 
 const {
   DRIVER_DISTANCE_KM,
   DRIVER_SPEED_KPH,
   DRIVER_UPDATE_HZ,
+  DRIVER_DROP_PACKAGE_SEC,
 } = process.env;
 
-export default (knex: Knex) =>
+export default (knex: Knex) => {
+  const getUserLocation = getUserLocationQuery(knex);
+  const setOrderLocation = setOrderLocationQuery(knex);
+  const markOrderDelivered = markOrderDeliveredQuery(knex);
+
   async (req: Express.Request, res: Express.Response) => {
     const order = orderFromRequest(req);
-    
-    const userLocation = await getUserLocationQuery(knex)(order.user_id)
+
+    const userLocation = await getUserLocation(order.user_id)
       .then(fromCoord);
 
-    // TODO: generate a fake location based on the user's location
-    // TODO: determine time to get to 
-    // TODO: wait + interpolate
+    // TODO: generate a fake location based on the user's location using postgis
+    const restaurantLocation: LatLon = { lat: 0, lon: 0 };
 
     // let hasura know everything is ok
     res.status(200).end();
 
-    const amt = 0.01; // TODO: calc
-    for (let pct = 0.0; pct < 1.0; pct += amt) {
-      // TODO: interpolate point + store in db
-      await Bluebird.delay(1000 / +DRIVER_UPDATE_HZ);
-    } 
-    // TODO: set final position
+    // simulate sending a drone to the user's house then dropping their meal
+    const deliverySeconds = HR_TO_SEC * (+DRIVER_DISTANCE_KM / +DRIVER_SPEED_KPH);
+    const step = 1000.0 / +DRIVER_UPDATE_HZ;
+    for (let t = 0.0; t < deliverySeconds; t += step) {
+      const pct = t / deliverySeconds;
+      const interpolated = mix(restaurantLocation, userLocation, pct);
+      await Promise.all([
+        setOrderLocation(order.id, interpolated),
+        Bluebird.delay(step),
+      ])
+    }
+    await Promise.all([
+      setOrderLocation(order.id, userLocation),
+      Bluebird.delay(1000 * +DRIVER_DROP_PACKAGE_SEC),
+    ]);
+  
+    // mark / notify that the delivery has been completed
+    await markOrderDelivered(order.id);
   };
+};

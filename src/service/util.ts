@@ -1,8 +1,8 @@
 import Express from 'express';
 
-interface LatLon {
-  lat: Number,
-  lon: Number,
+export interface LatLon {
+  lat: number,
+  lon: number,
 }
 
 export const orderFromRequest = (req: Express.Request) =>
@@ -14,5 +14,13 @@ export const fromCoord = (geoJSON: string): LatLon => {
   return {
     lat: coordinates[1],
     lon: coordinates[0],
-  };}
-;
+  };
+};
+
+export const tween = (a: number, b: number, pct: number): number =>
+  (1 - pct) * a + pct * b;
+
+export const mix = (a: LatLon, b: LatLon, pct: number): LatLon => ({
+  lat: tween(a.lat, b.lat, pct),
+  lon: tween(a.lon, b.lon, pct),
+})
