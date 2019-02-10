@@ -9,23 +9,27 @@
   "scripts": {
     "start": "ts-node src/server.ts",
     "dev": "./node_modules/nodemon/bin/nodemon.js",
-    "compose-up": "cd hasura && docker-compose up -d",
-    "compose-down": "cd hasura && docker-compose down",
     "hasura": "cd hasura && hasura console",
     "test": "jest",
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "bluebird": "^3.5.3",
     "body-parser": "^1.18.3",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
+    "knex": "^0.16.3",
+    "objection": "^1.5.3",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
+    "pg": "^7.8.0",
     "ts-node": "^8.0.2"
   },
   "devDependencies": {
+    "@types/body-parser": "^1.17.0",
     "@types/dotenv": "^6.1.0",
     "@types/express": "^4.16.1",
+    "@types/knex": "^0.15.1",
     "@types/passport": "^1.0.0",
     "nodemon": "^1.18.9",
     "tslint": "^5.12.1",

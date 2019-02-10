@@ -12,7 +12,7 @@ services:
     restart: always
     depends_on: [ dockerhost ]
     environment:
-      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgres@dockerhost:5432/great_bear_hasura
+      HASURA_GRAPHQL_DATABASE_URL: "postgres://postgres:postgres@dockerhost:5432/${POSTGRES_DATABASE}"
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
       ## uncomment next line to set an access key
       # HASURA_GRAPHQL_ACCESS_KEY: mysecretaccesskey
