@@ -11,7 +11,7 @@
     "dev": "./node_modules/nodemon/bin/nodemon.js",
     "hasura": "cd hasura && hasura console",
     "test": "jest",
-    "test:watch": "jest --watch",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "bcrypt": "^3.0.4",
