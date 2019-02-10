@@ -43,7 +43,7 @@ export default (knex: Knex) => {
     const userLocation = await getUserLocation(order.user_id)
       .then(fromCoord);
 
-    // generate a fake location based on the user's location using postgis
+    // generate a fake location near the user's location using postgis
     const randomAngle = 360.0 * Math.random();
     const restaurantLocation = await getProjection(
       userLocation,
