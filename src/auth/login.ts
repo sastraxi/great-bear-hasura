@@ -12,7 +12,6 @@ export default (
       return res.status(401).send('User or password mismatch.');
     }
     return req.login(user, (loginError) => {
-      console.log('u', user);
       if (loginError) return res.status(500).send(loginError);
       return res.status(200).json({
         user: _.pick(user, ['id', 'email', 'is_admin', 'latlon']),
