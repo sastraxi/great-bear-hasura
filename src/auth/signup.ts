@@ -30,8 +30,8 @@ export default (knex: Knex) =>
       });
     }
 
-    const existingUserId = await knex('app_public.user')
-      .whereRaw('LOWER(email) = ?', [email.toLowerCase().trim()])
+    const existingUserId = await knex('user')
+      .whereRaw('lower(email) = ?', [email.toLowerCase().trim()])
       .first('id')
       .then(row => row && row.id);
 
@@ -45,7 +45,7 @@ export default (knex: Knex) =>
       'st_setsrid(st_makepoint(?, ?), 4326)',
       [lon, lat]);
 
-    const id = await knex('app_public.user')
+    const id = await knex('user')
       .insert({
         email,
         hash_password: await bcrypt.hash(password, BCRYPT_ROUNDS),

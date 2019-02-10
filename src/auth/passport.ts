@@ -3,6 +3,8 @@ import Express from 'express';
 import passport from 'passport';
 
 import applyLocal from './local';
+import webhook from './webhook';
+import logout from './logout';
 
 interface UserRow {
   id: number
@@ -26,4 +28,7 @@ export default (app: Express.Application, knex: Knex) => {
   });
 
   applyLocal(app, knex);
+
+  app.get('/auth/webhook', webhook);
+  app.post('/auth/logout', logout);
 };

@@ -19,7 +19,13 @@ export default (app: Express.Application, knex: Knex) => {
     async (email, password, done) => {
       const user = await knex('user')
         .whereRaw('lower(email) = ?', [email.toLowerCase().trim()])
-        .first('id', 'email', 'hash_password', 'is_admin', 'latlon');
+        .first(
+          'id',
+          'email',
+          'hash_password',
+          'is_admin',
+          knex.raw('st_asgeojson(latlon) as latlon'),
+        );
       
       if (!user) return done(ERR_USER_OR_PASSWORD_MISMATCH);
       if (!user.hash_password) return done(ERR_USER_OR_PASSWORD_MISMATCH);
