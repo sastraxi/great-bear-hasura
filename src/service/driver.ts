@@ -46,7 +46,7 @@ export default (knex: Knex) => {
       randomAngle,
     ).then(fromCoord);
 
-    // let hasura know everything is ok
+    // let hasura know everything is ok before we start our sleeps
     res.status(200).end();
 
     // simulate sending a drone to the user's house then dropping their meal
