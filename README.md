@@ -2,11 +2,17 @@
 
 * stay as close to Hasura's 3-factor methodology as possible
 
-### Steps
+### Work log
 
 1. `curl -L https://github.com/hasura/graphql-engine/raw/master/cli/get.sh | bash`
 2. `hasura init`
-
+3. `hasura migrate create ...`
+4. Open http://localhost:8080/console and track everything
+5. Add auth package and set `HASURA_GRAPHQL_AUTH_HOOK`
+6. Define event responders and wire up to server
+7. Add webhook env vars through docker-compose; create event triggers
+8. Realize that you can't do mutations via `volatile` functions
+9. Create a work log schema and a `worklog.create_order`
 
 ### TODO
 
