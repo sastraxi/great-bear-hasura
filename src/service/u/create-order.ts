@@ -18,9 +18,6 @@ const setResponseQuery =
           where id = ?
         `, [JSON.stringify(responseJson), id])
 
-const amountPaidToPoints = (cents: number) => 
-  Math.ceil(cents / 100) * 10;
-
 /**
  * after the order has been verified, the authorized charge
  * is captured and points are added to the user's account
