@@ -1,6 +1,7 @@
 import Knex from 'knex';
 import Express from 'express';
 
+import createOrder from './u/create-order';
 import waiter from './u/waiter';
 import capture from './u/capture';
 import chef from './u/chef';
@@ -10,6 +11,7 @@ import email from './u/email';
 export default (knex: Knex): Express.Router => {
   const app = Express.Router();
 
+  app.get('create-order', createOrder(knex));
   app.get('waiter', waiter(knex));
   app.get('capture', capture(knex));
   app.get('chef', chef(knex));
