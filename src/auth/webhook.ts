@@ -7,10 +7,12 @@ export default (
   if (!req.user) {
     return res.status(200).json({
       'X-Hasura-Role': 'anonymous',
+      'X-Hasura-Session-Id': req.session && req.session.id,
     });
   }
   return res.status(200).json({
     'X-Hasura-Role': req.user.is_admin ? 'admin' : 'user',
     'X-Hasura-User-Id': `${req.user.id}`,
+    'X-Hasura-Session-Id': req.session.id,
   });
 };
