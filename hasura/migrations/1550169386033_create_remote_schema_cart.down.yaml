@@ -1,0 +1,3 @@
+- args:
+    name: cart
+  type: remove_remote_schema

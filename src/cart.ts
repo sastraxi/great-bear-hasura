@@ -22,11 +22,11 @@ const schema = gql`
   type Mutation {
     addToCart(itemId: Int!, quantity: Int!): Boolean!
     setCartQuantity(itemId: Int!, quantity: Int!): Boolean!
-    resetCart(): Boolean!
+    resetCart: Boolean!
   }
 
   type Query {
-    sessionId: Int!
+    sessionId: String!
   }
 `;
 
@@ -139,16 +139,19 @@ export default (
   const server = new ApolloServer({
     typeDefs: schema,
     resolvers,
-    context: ({ req }: HasRequest) => ({
-      knex,
-      userId: +req.headers['X-Hasura-User-Id'],
-      sessionId: req.headers['X-Hasura-Session_id'],
-    }),   
+    context: ({ req }: HasRequest) => {
+      console.log('request headers', req.headers);
+      return {
+        knex,
+        userId: +req.headers['x-hasura-user-id'],
+        sessionId: req.headers['x-hasura-session-id'],
+      };
+    },
   });
 
   server.applyMiddleware({
     app,
-    path: '/cart/graphql',
+    path: '/schema/cart',
   });
 
   return app;

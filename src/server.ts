@@ -6,6 +6,7 @@ import cors from 'cors';
 
 import serviceRoutes from './service/routes';
 import applyPassport from './auth/passport';
+import applyCartSchema from './cart';
 
 import knex from './db/knex';
 
@@ -33,7 +34,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 applyPassport(app, knex);
-
+applyCartSchema(app, knex);
 app.use('/u', serviceRoutes(knex));
 app.get('/', (req, res) => {
   res.status(200).send('OK');
