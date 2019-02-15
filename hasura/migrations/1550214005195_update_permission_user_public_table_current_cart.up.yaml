@@ -1,0 +1,18 @@
+- args:
+    permission:
+      allow_aggregations: false
+      columns:
+      - id
+      - user_id
+      - session_id
+      - created_at
+      - modified_at
+      filter:
+        user_id:
+          _eq: X-HASURA-USER-ID
+      limit: null
+    role: user
+    table:
+      name: current_cart
+      schema: public
+  type: create_select_permission

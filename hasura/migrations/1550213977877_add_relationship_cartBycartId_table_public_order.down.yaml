@@ -1,0 +1,6 @@
+- args:
+    relationship: cartBycartId
+    table:
+      name: order
+      schema: public
+  type: drop_relationship

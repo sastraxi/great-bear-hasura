@@ -1,0 +1,8 @@
+- args:
+    name: cartBycartId
+    table:
+      name: order
+      schema: public
+    using:
+      foreign_key_constraint_on: cart_id
+  type: create_object_relationship
