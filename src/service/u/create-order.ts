@@ -75,7 +75,7 @@ export default (knex: Knex) => {
   
     await knex('cart_item').delete().where('cart_id', cartId);
     await Promise.all([
-      knex('cart').delete().where('id', cartId),
+      knex('cart').delete().where('id', cartId), // fk will nullify order.cart_id
       knex('order').update({
         stripe_charge: charge,
         authorized_at: knex.fn.now(),

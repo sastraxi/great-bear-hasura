@@ -27,6 +27,7 @@
 * why do I have to delete two yaml files every time I create a migration?
 * singular table names (e.g. `user`) create awkward query names (e.g. `user { ... }` returns multiple users)
 * would be nice to have metadata in the repo rather than in the db
+  * seems like migrations are created, but they only started recently (???)
 * ws endpoint is same as http endpoint
 
 ### Resources
