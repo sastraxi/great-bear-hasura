@@ -9,7 +9,8 @@
   "scripts": {
     "start": "ts-node src/server.ts",
     "dev": "./node_modules/nodemon/bin/nodemon.js",
-    "hasura": "cd hasura && hasura console",
+    "hasura:console": "(SECRET=`dotenv -p HASURA_SECRET`; cd hasura && hasura console --access-key $SECRET)",
+    "hasura:migrate:apply": "(SECRET=`dotenv -p HASURA_SECRET`; cd hasura && hasura migrate apply --access-key $SECRET)",
     "test": "jest",
     "test:watch": "jest --watch"
   },
