@@ -50,3 +50,9 @@ export const sendEmailQuery = (knex: Knex) => (
     from user
     where user.id = ?
   `, [template, JSON.stringify(props), userId]);
+
+export const setOrderErrorQuery = (knex: Knex) =>
+  (orderId: number) =>
+    (error: Object): PromiseLike<void> =>
+      knex('order').update({ error }).where({ id: orderId });
+  

@@ -11,12 +11,15 @@
 5. Add auth package and set `HASURA_GRAPHQL_AUTH_HOOK`
 6. Define event responders and wire up to server
 7. Add webhook env vars through docker-compose; create event triggers
-8. Realize that you can't do mutations via `volatile` functions
-9. Create a work log schema and a `worklog.create_order`
+8. Realize that you can't do mutations via `volatile` functions, so
+   the "create order" mutation is now just inserting into `order`
 
 ### TODO
 
 * trigger to extract "public" charge information from stripe_charge and put into stripe_charge_public
+* just insert `order`s from the frontend (with `cart_id`, `stripe_token`, and `amount`).
+  payment becomes the first step in the order process (still event-driven!)
+
 
 ### Thoughts on Hasura
 
@@ -24,6 +27,7 @@
 * why do I have to delete two yaml files every time I create a migration?
 * singular table names (e.g. `user`) create awkward query names (e.g. `user { ... }` returns multiple users)
 * would be nice to have metadata in the repo rather than in the db
+* ws endpoint is same as http endpoint
 
 ### Resources
 

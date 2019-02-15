@@ -6,34 +6,24 @@ import {
   rowFromRequest,
 } from '../../util';
 
-const setResponseQuery =
-  (knex: Knex) =>
-    (id: number) =>
-      (responseJson: object) =>
-        knex.raw(`
-          update create_order
-          set
-            response_json = ?,
-            finished_at = now()
-          where id = ?
-        `, [JSON.stringify(responseJson), id])
+import { setOrderErrorQuery } from '../../db/query';
 
 /**
- * after the order has been verified, the authorized charge
- * is captured and points are added to the user's account
+ * when an order is created, we need to authorize the charge
+ * on the credit card, as well as make sure the amount is right
  */
 export default (knex: Knex) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
   return async (req: Express.Request, res: Express.Response) => {
     const {
-      id,
+      id: orderId,
       cart_id: cartId,
       amount,
       stripe_token: stripeToken,
       user_id: userId,
     } = rowFromRequest(req);
-    const setResponse = setResponseQuery(knex)(id);
+    const setError = setOrderErrorQuery(knex)(orderId);
 
     // validate our cart
     const cart = await knex.raw(`
@@ -48,15 +38,15 @@ export default (knex: Knex) => {
     `, [cartId]).then(rows => rows[0]);
 
     if (cart.userId !== userId) {
-      await setResponse({
-        error: "You do not own this cart!",
+      await setError({
+        message: "You do not own this cart!",
       });
       return;
     }
 
     if (cart.totalAmount !== amount) {
-      await setResponse({
-        error: `Cart amount: ${cart.totalAmount}. Your amount: ${amount}`,
+      await setError({
+        message: `Cart amount: ${cart.totalAmount}. Your amount: ${amount}`,
       });
       return;
     }
@@ -73,12 +63,6 @@ export default (knex: Knex) => {
       capture: false,
     });
 
-    const orderId = await knex('order').insert({
-      user_id: userId,
-      amount,
-      stripe_charge: charge,
-    }).returning('id').then(ids => ids[0]);
-
     await knex.raw(`
       insert into order_item (order_id, item_id, quantity)
       select
@@ -92,7 +76,10 @@ export default (knex: Knex) => {
     await knex('cart_item').delete().where('cart_id', cartId);
     await Promise.all([
       knex('cart').delete().where('id', cartId),
-      setResponse({ orderId }),
+      knex('order').update({
+        stripe_charge: charge,
+        authorized_at: knex.fn.now(),
+      })
     ]);
 
     // let hasura know everything is ok
