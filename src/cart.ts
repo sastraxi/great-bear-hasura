@@ -31,12 +31,13 @@ const schema = gql`
 `;
 
 const ensureCart = ({ knex, userId, sessionId }: Context) =>
-  knex.raw(`
+  knex.raw(` 
     insert into "cart"
       (session_id, user_id)
     values
       (?, ?)
-    on conflict do nothing
+    on conflict
+    do nothing
   `, [sessionId, userId]);
 
 const resolvers = {
@@ -57,18 +58,24 @@ const resolvers = {
       { itemId, quantity }: CartParams,
       context: Context,
     ) => {
-      const { sessionId, userId } = context;      
+      if (quantity < 1) throw new Error(
+        "addToCart expects an integer >= 1",
+      );
+
+      const { sessionId, userId } = context;
       await ensureCart(context);
       return knex.raw(`
         insert into cart_item
           (cart_id, item_id, quantity)
         select
           id, ?, ?
-          from cart
+        from cart
           where cart.session_id = ?
           and cart.user_id = ?
-        on conflict do update
-          set quantity = quantity + excluded.quantity
+        on conflict
+          (cart_id, item_id)
+        do update
+          set quantity = cart_item.quantity + excluded.quantity
       `, [itemId, quantity, sessionId, userId]).then(() => true);
     },
 
@@ -84,20 +91,25 @@ const resolvers = {
       const { sessionId, userId } = context;
       await ensureCart(context);
       if (quantity > 0) {
+        // directly set cart_item.quantity
         return knex.raw(`
           insert into cart_item
             (cart_id, item_id, quantity)
           select
             id, ?, ?
-            from cart
+          from cart
             where cart.session_id = ?
             and cart.user_id = ?
-          on conflict do update
+          on conflict
+            (cart_id, item_id)
+          do update
             set quantity = excluded.quantity
       `, [itemId, quantity, sessionId, userId]).then(() => true);
       } else {
+        // silently treats negatives as 0 (deletion)
         return knex.raw(`
           delete from cart_item
+
           where item_id = ? and cart_id = (
             select id
             from cart
@@ -117,7 +129,7 @@ const resolvers = {
       _params: any,
       context: Context,
     ) => {
-      const { sessionId, userId } = context;      
+      const { sessionId, userId } = context;
       await ensureCart(context);
       return knex.raw(`
         delete from cart_item
@@ -143,6 +155,7 @@ export default (
       console.log('request headers', req.headers);
       return {
         knex,
+        role: req.headers['x-hasura-role'],
         userId: +req.headers['x-hasura-user-id'],
         sessionId: req.headers['x-hasura-session-id'],
       };
