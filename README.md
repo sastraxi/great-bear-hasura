@@ -17,9 +17,6 @@
 ### TODO
 
 * trigger to extract "public" charge information from stripe_charge and put into stripe_charge_public
-* just insert `order`s from the frontend (with `cart_id`, `stripe_token`, and `amount`).
-  payment becomes the first step in the order process (still event-driven!)
-
 
 ### Thoughts on Hasura
 
