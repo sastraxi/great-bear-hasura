@@ -11,12 +11,12 @@ import email from './u/email';
 export default (knex: Knex): Express.Router => {
   const app = Express.Router();
 
-  app.get('create-order', createOrder(knex));
-  app.get('waiter', waiter(knex));
-  app.get('capture', capture(knex));
-  app.get('chef', chef(knex));
-  app.get('driver', driver(knex));
-  app.get('email', email(knex));
+  app.post('/create-order', createOrder(knex));
+  app.post('/waiter', waiter(knex));
+  app.post('/capture', capture(knex));
+  app.post('/chef', chef(knex));
+  app.post('/driver', driver(knex));
+  app.post('/email', email(knex));
 
   return app;  
 };
