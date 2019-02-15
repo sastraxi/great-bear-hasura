@@ -49,4 +49,4 @@ I can think of three ways to run some javascript code as a response to a GraphQL
 
 1. Forward the mutation to a [remote schema](https://docs.hasura.io/1.0/graphql/manual/remote-schemas/index.html).
 2. Similarly, you can proxy to Hasura yourself and stitch in as many other schemas as you'd like.
-3. Trigger on an database event (e.g. `INSERT`) and use the Event Trigger architecture. You essentially create a "work log" for your mutation. Read the return value by listening to a subscription on a column.
+3. Trigger on an database event (e.g. `INSERT`) and use the Event Trigger architecture. You essentially create a "work log" for your mutation, where inputs and outputs are columns in your table. Read the return value by creating a subscription.
