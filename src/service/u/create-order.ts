@@ -28,14 +28,14 @@ export default (knex: Knex) => {
     // validate our cart
     const cart = await knex.raw(`
       select
-        c.user_id as userId,
-        sum(i.amount * ci.quantity) as totalAmount
+        c.user_id as "userId",
+        sum(i.amount * ci.quantity)::int as "totalAmount"
       from "cart" c
       inner join "cart_item" ci on ci.cart_id = c.id
       inner join "item" i on i.id = ci.item_id
       where c.id = ?
       group by c.id
-    `, [cartId]).then(rows => rows[0]);
+    `, [cartId]).then(({ rows }) => rows[0]);
 
     if (cart.userId !== userId) {
       await setError({
@@ -76,10 +76,12 @@ export default (knex: Knex) => {
     await knex('cart_item').delete().where('cart_id', cartId);
     await Promise.all([
       knex('cart').delete().where('id', cartId), // fk will nullify order.cart_id
-      knex('order').update({
-        stripe_charge: charge,
-        authorized_at: knex.fn.now(),
-      })
+      knex('order')
+        .update({
+          stripe_charge: charge,
+          authorized_at: knex.fn.now(),
+        })
+        .where('id', orderId),
     ]);
 
     // let hasura know everything is ok

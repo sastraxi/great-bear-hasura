@@ -6,17 +6,17 @@ export const getUserLocationQuery = (knex: Knex) =>
   (userId: number): PromiseLike<string> =>
     knex.raw(`
       select
-        st_asgeojson(location.latlon) as latlon
-      from user
+        st_asgeojson(latlon) as latlon
+      from "user"
       where id = ?
-    `, [userId]).then(rows => rows[0].latlon);
+    `, [userId]).then(({ rows }) => rows[0].latlon);
   
 export const setOrderLocationQuery = (knex: Knex) => (
   orderId: number,
   latlon: LatLon,
 ): PromiseLike<void> =>
   knex.raw(`
-    update order
+    update "order"
     set
       latlon = st_setsrid(st_makepoint(?, ?), 4326)
     where id = ?
@@ -37,6 +37,7 @@ export const getProjectionQuery = (knex: Knex) => (
         )
       ) as latlon
   `, [latlon.lon, latlon.lat, distanceMetres, degreesFromNorthCCW])
+    .then(({ rows }) => rows[0].latlon);
 
 export const sendEmailQuery = (knex: Knex) => (
   userId: number,
@@ -46,9 +47,9 @@ export const sendEmailQuery = (knex: Knex) => (
   knex.raw(`
     insert into email (user_id, email, template, props)
     select
-      user.id, user.email, ?, ?
-    from user
-    where user.id = ?
+      "user".id, "user".email, ?, ?
+    from "user"
+    where "user".id = ?
   `, [template, JSON.stringify(props), userId]);
 
 export const setOrderErrorQuery = (knex: Knex) =>

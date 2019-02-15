@@ -26,7 +26,7 @@ export default (knex: Knex) => {
 
   return async (req: Express.Request, res: Express.Response) => {
     const order = rowFromRequest(req);
-    const existingCharge = JSON.parse(order.stripe_charge);
+    const existingCharge = order.stripe_charge;
 
     // let hasura know everything is ok before we sleep
     res.status(200).end();
@@ -64,7 +64,7 @@ export default (knex: Knex) => {
         knex('order')
           .update({
             failed_at: knex.fn.now(),
-            failure_message,
+            error: JSON.stringify({ message: failure_message }),
           })
           .where({ id: order.id }),
       ]);

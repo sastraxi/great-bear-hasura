@@ -1,5 +1,4 @@
 import Knex from 'knex';
-import Bluebird from 'bluebird';
 import Stripe from 'stripe';
 import Express from 'express';
 
@@ -19,24 +18,33 @@ export default (knex: Knex) => {
 
   return async (req: Express.Request, res: Express.Response) => {
     const order = rowFromRequest(req);
-    const existingCharge = JSON.parse(order.stripe_charge);
+    const existingCharge = order.stripe_charge;
 
     // let hasura know everything is ok
     res.status(200).end();
 
-    const charge = await stripe.charges.capture(existingCharge.id, {
-      amount: order.amount,
-    });
-  
-    await Promise.all([
-      knex('user')
-        .increment('points', amountPaidToPoints(order.amount)),
-      knex('order')
+    try {
+      const charge = await stripe.charges.capture(existingCharge.id, {
+        amount: order.amount,
+      });
+    
+      await Promise.all([
+        knex('user')
+          .increment('points', amountPaidToPoints(order.amount)),
+        knex('order')
+          .update({
+            captured_at: knex.fn.now(),
+            stripe_charge: JSON.stringify(charge),
+          })
+          .where({ id: order.id }),
+      ]);
+    } catch (err) {
+      console.log(`Could not capture charge for order.id=${order.id}`, err);
+      await knex('order')
         .update({
-          captured_at: knex.fn.now(),
-          stripe_charge: JSON.stringify(charge),
-        })
-        .where({ id: order.id }),
-    ]);
+          failed_at: knex.fn.now(),
+          error: JSON.stringify(err),
+        });
+    }
   };
 };
