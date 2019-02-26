@@ -7,7 +7,7 @@ create function current_user_id()
 returns integer as $$
   select case when get_hasura_user() is null
     then null 
-    else (get_hasura_user()->>'x_hasura_user_id')::integer
+    else (get_hasura_user()->>'x-hasura-user-id')::integer
   end
 $$ language sql stable;
 

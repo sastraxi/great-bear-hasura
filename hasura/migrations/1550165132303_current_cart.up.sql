@@ -4,7 +4,7 @@ create function current_session_id()
 returns text as $$
   select case when get_hasura_user() is null
     then null 
-    else (get_hasura_user()->>'x_hasura_session_id')::text
+    else (get_hasura_user()->>'x-hasura-session-id')::text
   end
 $$ language sql stable;
 
