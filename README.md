@@ -10,7 +10,8 @@
 6. Define event responders and wire up to server
 7. Add webhook env vars through docker-compose; create event triggers
 8. Realize that you can't do mutations via `volatile` functions, so
-   the "create order" mutation is now just inserting into `order`
+   the checkout mutation is now just inserting into `order`
+9. Realize that cookies aren't going to work via websockets :(
 
 ### TODO
 * trigger to extract "public" charge information from stripe_charge and put into stripe_charge_public
