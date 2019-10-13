@@ -6,7 +6,7 @@ services:
     restart: on-failure
 
   graphql-engine:
-    image: hasura/graphql-engine:v1.0.0-alpha37
+    image: hasura/graphql-engine:v1.0.0-beta.6
     ports:
       - "8080:8080"
     restart: always
@@ -16,10 +16,12 @@ services:
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
 
       # HASURA_GRAPHQL_UNAUTHORIZED_ROLE: "anonymous"
-      HASURA_GRAPHQL_ACCESS_KEY: "${HASURA_SECRET}"
+      HASURA_GRAPHQL_ADMIN_SECRET: "${HASURA_SECRET}"
       HASURA_GRAPHQL_AUTH_HOOK: "${HASURA_AUTH_WEBHOOK_URL}"
+      # HASURA_GRAPHQL_ENABLED_APIS: "metadata,graphql" # the default; change to just graphql for prod
+      HASURA_GRAPHQL_CORS_DOMAIN: "*" # change for prod
 
-      CART_SCHEMA_URL: "${CART_SCHEMA_URL}"      
+      CART_SCHEMA_URL: "${CART_SCHEMA_URL}"
 
       CREATE_ORDER_WEBHOOK_URL: "${CREATE_ORDER_WEBHOOK_URL}"
       WAITER_WEBHOOK_URL: "${WAITER_WEBHOOK_URL}"
