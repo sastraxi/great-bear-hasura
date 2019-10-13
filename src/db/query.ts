@@ -1,4 +1,4 @@
-import Knex from 'knex';
+import Knex, { QueryBuilder } from 'knex';
 
 import { LatLon } from '../util';
 
@@ -54,7 +54,7 @@ export const sendEmailQuery = (knex: Knex) => (
 
 export const setOrderErrorQuery = (knex: Knex) =>
   (orderId: number) =>
-    (error: Object): PromiseLike<void> =>
+    (error: Object): QueryBuilder<any, number> =>
       knex('order').update({
         error,
         failed_at: knex.fn.now(),
