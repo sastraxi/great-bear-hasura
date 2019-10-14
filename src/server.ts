@@ -39,7 +39,8 @@ applyAuthSchema(app, knex);
 applyCartSchema(app, knex);
 app.use('/u', serviceRoutes(knex));
 app.get('/', (req, res) => {
-  req.session.abc = 123; // FIXME: delete this once we're actually logging in
+  // do we need this anymore?
+  // req.session.abc = 123; // FIXME: delete this once we're actually logging in
   res.status(200).send('OK');
 });
 

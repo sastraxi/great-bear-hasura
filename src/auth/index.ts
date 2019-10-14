@@ -10,6 +10,7 @@ import ensureLoggedOut from '../resolver/ensure-logged-out';
 import login from './resolver/login';
 import logout from './resolver/logout';
 import signup from './resolver/signup';
+import me from './resolver/me';
 
 const typeDefs = gql`
   type AuthedUser {
@@ -18,10 +19,14 @@ const typeDefs = gql`
     isAdmin: Boolean!
   }
 
-  extend type Mutation {
+  type Mutation {
     login(email: String!, password: String!): AuthedUser!
     logout: Boolean!
     signup(email: String!, password: String!): AuthedUser!
+  }
+
+  type Query {
+    me: AuthedUser
   }
 `;
 
@@ -29,6 +34,12 @@ const typeDefs = gql`
  * Wrap our resolver delegates in middleware.
  */
 const resolvers = {
+  Query: {
+    me: combineResolvers(
+      ensureUserSession,
+      me,
+    ),
+  },
   Mutation: {
     login: combineResolvers(
       ensureLoggedOut,

@@ -1,7 +1,8 @@
 import pick from 'lodash/pick';
 import passport from 'passport';
 import { AuthContext } from '../types';
-import { UserParams, User } from "../types";
+import { UserParams } from "../types";
+import { User } from '../../types';
 
 const login = async (
   _root: any,
