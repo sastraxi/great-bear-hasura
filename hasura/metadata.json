@@ -1,6 +1,18 @@
 {
   "functions": [],
-  "remote_schemas": [],
+  "remote_schemas": [
+    {
+      "name": "cart",
+      "definition": {
+        "url": null,
+        "url_from_env": "CART_SCHEMA_URL",
+        "headers": [],
+        "forward_client_headers": true,
+        "timeout_seconds": 60
+      },
+      "comment": null
+    }
+  ],
   "query_collections": [],
   "allowlist": [],
   "tables": [
@@ -212,35 +224,6 @@
       "delete_permissions": [],
       "event_triggers": [
         {
-          "webhook_from_env": "WAITER_WEBHOOK_URL",
-          "headers": [],
-          "name": "waiter",
-          "definition": {
-            "insert": {
-              "columns": [
-                "id",
-                "user_id",
-                "stripe_charge",
-                "amount",
-                "iso_currency",
-                "failure_message",
-                "latlon",
-                "created_at",
-                "modified_at",
-                "failed_at",
-                "verified_at",
-                "captured_at",
-                "cooked_at",
-                "delivered_at"
-              ]
-            }
-          },
-          "retry_conf": {
-            "num_retries": 0,
-            "interval_sec": 10
-          }
-        },
-        {
           "webhook_from_env": "CAPTURE_WEBHOOK_URL",
           "headers": [],
           "name": "capture",
@@ -287,6 +270,39 @@
             "enable_manual": false
           },
           "retry_conf": {
+            "num_retries": 0,
+            "interval_sec": 10
+          }
+        },
+        {
+          "webhook_from_env": "WAITER_WEBHOOK_URL",
+          "headers": [],
+          "name": "waiter",
+          "definition": {
+            "update": {
+              "columns": [
+                "authorized_at"
+              ]
+            },
+            "enable_manual": false
+          },
+          "retry_conf": {
+            "num_retries": 0,
+            "interval_sec": 10
+          }
+        },
+        {
+          "webhook_from_env": "CREATE_ORDER_WEBHOOK_URL",
+          "headers": [],
+          "name": "create_order",
+          "definition": {
+            "insert": {
+              "columns": "*"
+            },
+            "enable_manual": false
+          },
+          "retry_conf": {
+            "timeout_sec": 60,
             "num_retries": 0,
             "interval_sec": 10
           }
