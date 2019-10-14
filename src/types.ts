@@ -10,3 +10,16 @@ export interface Context {
 export interface HasRequest {
   req: Express.Request,
 }
+
+export interface User {
+  id: number
+  email: string
+  is_admin: boolean
+}
+
+declare module 'http' {
+  export interface IncomingMessage {
+    user?: User
+    ip: string // from Express.Request
+  }
+}

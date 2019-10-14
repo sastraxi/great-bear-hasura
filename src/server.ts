@@ -5,7 +5,8 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 
 import serviceRoutes from './service/routes';
-import applyPassport from './auth/passport';
+import applyPassport from './auth/setup';
+import applyAuthSchema from './auth';
 import applyCartSchema from './cart';
 
 import knex from './db/knex';
@@ -34,6 +35,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 applyPassport(app, knex);
+applyAuthSchema(app, knex);
 applyCartSchema(app, knex);
 app.use('/u', serviceRoutes(knex));
 app.get('/', (req, res) => {

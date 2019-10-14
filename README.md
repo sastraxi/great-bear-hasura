@@ -15,15 +15,20 @@
 10. The websockets bug is fixed!
 11. Upgrade to latest version of hasura (`beta.6`) and find out that the existing db won't work
 12. Move migrations from hasura to knex and build a db from scratch
+13. Fix up metadata and re-export to `hasura/metadata.json`
+14. Move cart schema over to a friendlier folder structure consistent with great-bear-postgraphile
+15. Upgrade auth to be a remote schema as well now that cookies are being sent properly
 
 ### TODO
 * trigger to extract "public" charge information from stripe_charge and put into stripe_charge_public
+* remove latlon with migration + from hasura metadata
 
 ### Thoughts on Hasura / impl.
 * docs are pretty good though they seem aimed at hiding complexity rather than exposing it
 * why do I have to delete two yaml files every time I create a migration?
 * singular table names (e.g. `user`) create awkward query names (e.g. `user { ... }` returns multiple users)
   * also `userByuserId` -- inconsistent camel case notation
+  * easy enough to modify these into better names via the web console
 * would be nice to have metadata in the repo rather than in the db
   * seems like migrations are created sometimes... only started recently, no config changes (???)
 * ws endpoint is same as http endpoint

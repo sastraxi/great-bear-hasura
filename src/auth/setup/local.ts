@@ -4,9 +4,7 @@ import passport from 'passport';
 import bcrypt from 'bcrypt';
 
 import { Strategy as LocalStrategy } from 'passport-local';
-import { fromCoord } from '../util';
-import login from './login';
-import signup from './signup';
+import { fromCoord } from '../../util';
 
 const ERR_USER_OR_PASSWORD_MISMATCH = 'user-or-password-mismatch';
 
@@ -42,6 +40,7 @@ export default (app: Express.Application, knex: Knex) => {
     },
   ));
 
-  app.post('/auth/login', login);
-  app.post('/auth/signup', signup(knex));
+  // TODO: remove this old restful authn code
+  // app.post('/auth/login', login);
+  // app.post('/auth/signup', signup(knex));
 };
