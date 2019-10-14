@@ -1,10 +1,10 @@
 import { AuthContext } from '../types';
 import { User } from '../../types';
 
-const me = async (
+const currentUser = async (
   _root: any,
   _params: any,
   { req }: AuthContext,
 ): Promise<User> => req.user;
 
-export default me;
+export default currentUser;

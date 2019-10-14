@@ -10,7 +10,7 @@ import ensureLoggedOut from '../resolver/ensure-logged-out';
 import login from './resolver/login';
 import logout from './resolver/logout';
 import signup from './resolver/signup';
-import me from './resolver/me';
+import currentUser from './resolver/current-user';
 
 const typeDefs = gql`
   type AuthedUser {
@@ -26,7 +26,7 @@ const typeDefs = gql`
   }
 
   type Query {
-    me: AuthedUser
+    currentUser: AuthedUser
   }
 `;
 
@@ -35,9 +35,9 @@ const typeDefs = gql`
  */
 const resolvers = {
   Query: {
-    me: combineResolvers(
+    currentUser: combineResolvers(
       ensureUserSession,
-      me,
+      currentUser,
     ),
   },
   Mutation: {

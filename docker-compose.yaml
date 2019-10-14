@@ -21,6 +21,7 @@ services:
       # HASURA_GRAPHQL_ENABLED_APIS: "metadata,graphql" # the default; change to just graphql for prod
       HASURA_GRAPHQL_CORS_DOMAIN: "*" # change for prod
 
+      AUTH_SCHEMA_URL: "${AUTH_SCHEMA_URL}"
       CART_SCHEMA_URL: "${CART_SCHEMA_URL}"
 
       CREATE_ORDER_WEBHOOK_URL: "${CREATE_ORDER_WEBHOOK_URL}"
