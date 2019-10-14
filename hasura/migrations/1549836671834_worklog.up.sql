@@ -1,3 +1,4 @@
+
 create function get_hasura_user()
 returns jsonb as $$
   select nullif(current_setting('hasura.user', true), '')::jsonb

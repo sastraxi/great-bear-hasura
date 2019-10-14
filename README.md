@@ -12,6 +12,9 @@
 8. Realize that you can't do mutations via `volatile` functions, so
    the checkout mutation is now just inserting into `order`
 9. Realize that cookies aren't going to work via websockets :(
+10. The websockets bug is fixed!
+11. Upgrade to latest version of hasura (`beta.6`) and find out that the existing db won't work
+12. Move migrations from hasura to knex and build a db from scratch
 
 ### TODO
 * trigger to extract "public" charge information from stripe_charge and put into stripe_charge_public
