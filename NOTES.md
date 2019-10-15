@@ -21,7 +21,6 @@
 
 ### TODO
 * trigger to extract "public" charge information from stripe_charge and put into stripe_charge_public
-* remove latlon with migration + from hasura metadata
 
 ### Thoughts on Hasura / impl.
 * docs are pretty good though they seem aimed at hiding complexity rather than exposing it

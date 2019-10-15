@@ -11,6 +11,17 @@
         "timeout_seconds": 60
       },
       "comment": null
+    },
+    {
+      "name": "auth",
+      "definition": {
+        "url": null,
+        "url_from_env": "AUTH_SCHEMA_URL",
+        "headers": [],
+        "forward_client_headers": true,
+        "timeout_seconds": 60
+      },
+      "comment": null
     }
   ],
   "query_collections": [],
@@ -433,7 +444,6 @@
               "created_at",
               "email",
               "id",
-              "latlon",
               "modified_at",
               "points"
             ],
@@ -446,23 +456,7 @@
           }
         }
       ],
-      "update_permissions": [
-        {
-          "role": "user",
-          "comment": null,
-          "permission": {
-            "set": {},
-            "columns": [
-              "latlon"
-            ],
-            "filter": {
-              "id": {
-                "_eq": "X-Hasura-User-Id"
-              }
-            }
-          }
-        }
-      ],
+      "update_permissions": [],
       "delete_permissions": [],
       "event_triggers": []
     },
