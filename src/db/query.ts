@@ -29,7 +29,7 @@ export const setOrderLocationQuery = (knex: Knex) => (
   knex.raw(`
     update "order"
     set
-      latlon = st_setsrid(st_makepoint(?, ?), 4326)
+      current_latlon = st_setsrid(st_makepoint(?, ?), 4326)
     where id = ?
   `, [latlon.lon, latlon.lat, orderId]);
 
