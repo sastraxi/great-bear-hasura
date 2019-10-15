@@ -196,7 +196,6 @@
             "columns": [
               "amount",
               "cart_id",
-              "latlon",
               "stripe_token"
             ]
           }
@@ -218,7 +217,6 @@
               "error",
               "failed_at",
               "id",
-              "latlon",
               "modified_at",
               "user_id",
               "verified_at"

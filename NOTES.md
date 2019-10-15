@@ -21,6 +21,8 @@
 
 ### TODO
 * trigger to extract "public" charge information from stripe_charge and put into stripe_charge_public
+* finish copying latlon driver code from pgsh
+* 
 
 ### Thoughts on Hasura / impl.
 * docs are pretty good though they seem aimed at hiding complexity rather than exposing it
@@ -50,7 +52,17 @@ $$ language sql stable;
 * two ways to do `current*`:
   * currentCart is implemented using a view and tracked by hasura
   * currentUser is implemented via stitched in schema
-* why do we get an unexpected error value when trying to login with 
+* starting checkout by inserting into "order":
+  * we have to insert cart_id and user_id. what are our options?
+    * fe knows both values; grab them and forward them on
+      * addtl roundtrip?
+      * hasura has to validate; don't need order <-> cart relationship other than for this
+    * default values
+      * user_id not null default current_user_id()
+      * can't do this though:
+        * cart_id not null default (select id from cart where session_id = current_session_id())
+    * let them be null and set them in `1-create-order.ts`.
+  * ended up going with `user_id` via default and `cart_id` set via frontend
 
 ### Resources
 * https://3factor.app

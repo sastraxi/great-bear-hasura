@@ -13,7 +13,7 @@ export const rowFromRequest = (req: Express.Request) =>
 export const fromCoord = (geoJSON: string): LatLon => {
   if (!geoJSON) return null;
   const { coordinates } = JSON.parse(geoJSON);
-  return {
+  return { // notice it's flipped in postgis
     lat: coordinates[1],
     lon: coordinates[0],
   };

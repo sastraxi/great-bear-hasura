@@ -1,8 +1,11 @@
 import Knex from 'knex';
 import Bluebird from 'bluebird';
+import createDebugger from 'debug';
 import Express from 'express';
 import moment from 'moment';
 import _ from 'lodash';
+
+const debug = createDebugger('gbh:delivery');
 
 const HR_TO_SEC = 3600;
 const KM_TO_M = 1000;
@@ -15,7 +18,7 @@ import {
 } from '../../util';
 
 import {
-  getUserLocationQuery,
+  getOrderLocationsQuery,
   setOrderLocationQuery,
   getProjectionQuery,
   sendEmailQuery,
@@ -32,7 +35,7 @@ const {
  * After the food has been prepared, a drone flies it to the user's address.
  */
 export default (knex: Knex) => {
-  const getUserLocation = getUserLocationQuery(knex);
+  const getOrderLocations = getOrderLocationsQuery(knex);
   const setOrderLocation = setOrderLocationQuery(knex);
   const getProjection = getProjectionQuery(knex);
   const sendEmail = sendEmailQuery(knex);
@@ -40,13 +43,12 @@ export default (knex: Knex) => {
   return async (req: Express.Request, res: Express.Response) => {
     const order = rowFromRequest(req);
 
-    const userLocation = await getUserLocation(order.user_id)
-      .then(fromCoord);
+    const { destination: targetCoord } = await getOrderLocations(order.id);
 
     // generate a fake location near the user's location using postgis
     const randomAngle = 360.0 * Math.random();
-    const restaurantLocation = await getProjection(
-      userLocation,
+    const initialCoord = await getProjection(
+      targetCoord,
       KM_TO_M * +DRIVER_DISTANCE_KM,
       randomAngle,
     ).then(fromCoord);
@@ -59,14 +61,14 @@ export default (knex: Knex) => {
     const step = 1.0 / +DRIVER_UPDATE_HZ;
     for (let t = 0.0; t < deliverySeconds; t += step) {
       const pct = t / deliverySeconds;
-      const interpolated = mix(restaurantLocation, userLocation, pct);
+      const interpolated = mix(initialCoord, targetCoord, pct);
       await Promise.all([
         setOrderLocation(order.id, interpolated),
         Bluebird.delay(SEC_TO_MS * step),
       ])
     }
     await Promise.all([
-      setOrderLocation(order.id, userLocation),
+      setOrderLocation(order.id, targetCoord),
       Bluebird.delay(SEC_TO_MS * +DRIVER_DROP_PACKAGE_SEC),
     ]);
   
@@ -87,5 +89,7 @@ export default (knex: Knex) => {
         .update({ delivered_at })
         .where({ id: order.id }),
     ]);
+
+    debug(`delivered order #${order.id}`);
   };
 };

@@ -1,16 +1,27 @@
 import Knex, { QueryBuilder } from 'knex';
 
-import { LatLon } from '../util';
+import { LatLon, fromGeoJSON } from '../util';
 
-export const getUserLocationQuery = (knex: Knex) =>
-  (userId: number): PromiseLike<string> =>
+interface OrderLocations {
+  current?: LatLon
+  destination: LatLon
+}
+
+export const getOrderLocationsQuery = (knex: Knex) =>
+  (orderId: number): PromiseLike<OrderLocations> =>
     knex.raw(`
       select
-        st_asgeojson(latlon) as latlon
-      from "user"
+        st_asgeojson(current_latlon) as current,
+        st_asgeojson(destination_latlon) as destination
+      from app_public."order"
       where id = ?
-    `, [userId]).then(({ rows }) => rows[0].latlon);
-  
+    `, [orderId])
+    .then(({ rows }) => rows[0])
+    .then(({ current, destination }) => ({
+      current: fromGeoJSON(current),
+      destination: fromGeoJSON(destination),
+    }));
+
 export const setOrderLocationQuery = (knex: Knex) => (
   orderId: number,
   latlon: LatLon,

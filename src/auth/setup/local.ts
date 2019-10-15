@@ -4,7 +4,6 @@ import passport from 'passport';
 import bcrypt from 'bcrypt';
 
 import { Strategy as LocalStrategy } from 'passport-local';
-import { fromCoord } from '../../util';
 
 const ERR_USER_OR_PASSWORD_MISMATCH = 'user-or-password-mismatch';
 
@@ -22,7 +21,6 @@ export default (app: Express.Application, knex: Knex) => {
           'email',
           'hash_password',
           'is_admin',
-          knex.raw('st_asgeojson(latlon) as latlon'),
         );
       
       if (!user) return done(ERR_USER_OR_PASSWORD_MISMATCH);
@@ -35,7 +33,6 @@ export default (app: Express.Application, knex: Knex) => {
         id: user.id,
         email: user.email,
         is_admin: user.is_admin,
-        latlon: fromCoord(user.latlon),
       });
     },
   ));
