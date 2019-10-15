@@ -36,16 +36,11 @@ const signup = async (
   const id = await knex('user')
     .insert({
       email,
+      hash_password: hashedPassword,
+      is_admin: false,
     })
     .returning('id')
     .then(rows => rows && rows[0]);
-
-  await knex('app_private.user')
-    .insert({
-      user_id: id,
-      hash_password: hashedPassword,
-      is_admin: false,
-    });
 
   return new Promise((resolve, reject) => {
     req.login({ id, email }, (err) => {

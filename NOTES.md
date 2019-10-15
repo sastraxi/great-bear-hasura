@@ -48,6 +48,10 @@ returns integer as $$
   end
 $$ language sql stable;
 ```
+* two ways to do `current*`:
+  * currentCart is implemented using a view and tracked by hasura
+  * currentUser is implemented via stitched in schema
+* why do we get an unexpected error value when trying to login with 
 
 ### Resources
 * https://3factor.app

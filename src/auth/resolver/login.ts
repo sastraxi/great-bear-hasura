@@ -4,6 +4,9 @@ import { AuthContext } from '../types';
 import { UserParams } from "../types";
 import { User } from '../../types';
 
+import createDebugger from 'debug';
+const debug = createDebugger('gbh:auth');
+
 const login = async (
   _root: any,
   { email, password }: UserParams,
@@ -13,7 +16,7 @@ const login = async (
   req.body.password = password;
 
   passport.authenticate('local', (err: any, user) => {
-    if (err) {
+    if (err || !user) {
       return reject('User or password mismatch.');
     }
     return req.login(user, (loginError) => {
