@@ -50,18 +50,25 @@ export const getProjectionQuery = (knex: Knex) => (
   `, [latlon.lon, latlon.lat, distanceMetres, degreesFromNorthCCW])
     .then(({ rows }) => rows[0].latlon);
 
+// TODO: finish email code!
 export const sendEmailQuery = (knex: Knex) => (
   userId: number,
   template: string,
   props: Object,
-): PromiseLike<number> =>
-  knex.raw(`
-    insert into email (user_id, email, template, props)
-    select
-      "user".id, "user".email, ?, ?
-    from "user"
-    where "user".id = ?
-  `, [template, JSON.stringify(props), userId]);
+) => Promise.resolve();
+
+// export const sendEmailQuery = (knex: Knex) => (
+//   userId: number,
+//   template: string,
+//   props: Object,
+// ): PromiseLike<number> =>
+//   knex.raw(`
+//     insert into email (user_id, email, template, props)
+//     select
+//       "user".id, "user".email, ?, ?
+//     from "user"
+//     where "user".id = ?
+//   `, [template, JSON.stringify(props), userId]);
 
 export const setOrderErrorQuery = (knex: Knex) =>
   (orderId: number) =>
