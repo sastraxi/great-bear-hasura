@@ -21,8 +21,7 @@
 
 ### TODO
 * trigger to extract "public" charge information from stripe_charge and put into stripe_charge_public
-* finish copying latlon driver code from pgsh
-* 
+* remove current_cart stuff / default order.user_id to finish using hasura idiomatically
 
 ### Thoughts on Hasura / impl.
 * docs are pretty good though they seem aimed at hiding complexity rather than exposing it
@@ -63,6 +62,9 @@ $$ language sql stable;
         * cart_id not null default (select id from cart where session_id = current_session_id())
     * let them be null and set them in `1-create-order.ts`.
   * ended up going with `user_id` via default and `cart_id` set via frontend
+* why is `current_setting('hasura.user')` giving grief in beta6?
+  * it's not all bad... the new way is more idiomatic.
+  * seems like the console is pretty expressive after all
 
 ### Resources
 * https://3factor.app
