@@ -12,7 +12,7 @@ const KM_TO_M = 1000;
 
 import {
   rowFromRequest,
-  fromCoord,
+  fromGeoJSON,
   mix,
   SEC_TO_MS,
 } from '../../util';
@@ -51,7 +51,7 @@ export default (knex: Knex) => {
       targetCoord,
       KM_TO_M * +DRIVER_DISTANCE_KM,
       randomAngle,
-    ).then(fromCoord);
+    ).then(fromGeoJSON);
 
     // let hasura know everything is ok before we start our sleeps
     res.status(200).end();

@@ -10,7 +10,7 @@ export interface LatLon {
 export const rowFromRequest = (req: Express.Request) =>
   req.body.event ? req.body.event.data.new : req.body;
 
-export const fromCoord = (geoJSON: string): LatLon => {
+export const fromGeoJSON = (geoJSON: string): LatLon => {
   if (!geoJSON) return null;
   const { coordinates } = JSON.parse(geoJSON);
   return { // notice it's flipped in postgis
