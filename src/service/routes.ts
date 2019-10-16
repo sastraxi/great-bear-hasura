@@ -1,12 +1,11 @@
 import Knex from 'knex';
 import Express from 'express';
 
-import createOrder from './u/create-order';
-import waiter from './u/waiter';
-import capture from './u/capture';
-import chef from './u/chef';
-import driver from './u/driver';
-import email from './u/email';
+import createOrder from './u/1-create-order';
+import waiter from './u/2-waiter';
+import capture from './u/3-capture';
+import chef from './u/4-chef';
+import driver from './u/5-driver';
 
 export default (knex: Knex): Express.Router => {
   const app = Express.Router();
@@ -16,7 +15,6 @@ export default (knex: Knex): Express.Router => {
   app.post('/capture', capture(knex));
   app.post('/chef', chef(knex));
   app.post('/driver', driver(knex));
-  app.post('/email', email(knex));
 
   return app;  
 };

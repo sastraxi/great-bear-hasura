@@ -1,16 +1,27 @@
 import Knex, { QueryBuilder } from 'knex';
 
-import { LatLon } from '../util';
+import { LatLon, fromGeoJSON } from '../util';
 
-export const getUserLocationQuery = (knex: Knex) =>
-  (userId: number): PromiseLike<string> =>
+interface OrderLocations {
+  current?: LatLon
+  destination: LatLon
+}
+
+export const getOrderLocationsQuery = (knex: Knex) =>
+  (orderId: number): PromiseLike<OrderLocations> =>
     knex.raw(`
       select
-        st_asgeojson(latlon) as latlon
-      from "user"
+        st_asgeojson(current_latlon) as current,
+        st_asgeojson(destination_latlon) as destination
+      from "order"
       where id = ?
-    `, [userId]).then(({ rows }) => rows[0].latlon);
-  
+    `, [orderId])
+    .then(({ rows }) => rows[0])
+    .then(({ current, destination }) => ({
+      current: fromGeoJSON(current),
+      destination: fromGeoJSON(destination),
+    }));
+
 export const setOrderLocationQuery = (knex: Knex) => (
   orderId: number,
   latlon: LatLon,
@@ -18,7 +29,7 @@ export const setOrderLocationQuery = (knex: Knex) => (
   knex.raw(`
     update "order"
     set
-      latlon = st_setsrid(st_makepoint(?, ?), 4326)
+      current_latlon = st_setsrid(st_makepoint(?, ?), 4326)
     where id = ?
   `, [latlon.lon, latlon.lat, orderId]);
 
@@ -39,18 +50,25 @@ export const getProjectionQuery = (knex: Knex) => (
   `, [latlon.lon, latlon.lat, distanceMetres, degreesFromNorthCCW])
     .then(({ rows }) => rows[0].latlon);
 
+// TODO: finish email code!
 export const sendEmailQuery = (knex: Knex) => (
   userId: number,
   template: string,
   props: Object,
-): PromiseLike<number> =>
-  knex.raw(`
-    insert into email (user_id, email, template, props)
-    select
-      "user".id, "user".email, ?, ?
-    from "user"
-    where "user".id = ?
-  `, [template, JSON.stringify(props), userId]);
+) => Promise.resolve();
+
+// export const sendEmailQuery = (knex: Knex) => (
+//   userId: number,
+//   template: string,
+//   props: Object,
+// ): PromiseLike<number> =>
+//   knex.raw(`
+//     insert into email (user_id, email, template, props)
+//     select
+//       "user".id, "user".email, ?, ?
+//     from "user"
+//     where "user".id = ?
+//   `, [template, JSON.stringify(props), userId]);
 
 export const setOrderErrorQuery = (knex: Knex) =>
   (orderId: number) =>

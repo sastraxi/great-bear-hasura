@@ -12,7 +12,7 @@ export default (knex: Knex) =>
   async (req: Express.Request, res: Express.Response) => {
     const email = rowFromRequest(req);
 
-    // TODO: actually send the email.
+    // TODO: actually hook this up to hasura + send the email.
 
     await knex('email')
       .update({ sent_at: knex.fn.now() })

@@ -1,58 +1,32 @@
-### Design Decisions
-* stay as close to Hasura's 3-factor methodology as possible
+# Great Bear (Hasura)
 
-### Work log
-1. `curl -L https://github.com/hasura/graphql-engine/raw/master/cli/get.sh | bash`
-2. `hasura init`
-3. `hasura migrate create ...`
-4. Open http://localhost:8080/console and track everything
-5. Add auth package and set `HASURA_GRAPHQL_AUTH_HOOK`
-6. Define event responders and wire up to server
-7. Add webhook env vars through docker-compose; create event triggers
-8. Realize that you can't do mutations via `volatile` functions, so
-   the checkout mutation is now just inserting into `order`
-9. Realize that cookies aren't going to work via websockets :(
+### Prerequisites
 
-### TODO
-* trigger to extract "public" charge information from stripe_charge and put into stripe_charge_public
+* local docker
 
-### Thoughts on Hasura / impl.
-* docs are pretty good though they seem aimed at hiding complexity rather than exposing it
-* why do I have to delete two yaml files every time I create a migration?
-* singular table names (e.g. `user`) create awkward query names (e.g. `user { ... }` returns multiple users)
-  * also `userByuserId` -- inconsistent camel case notation
-* would be nice to have metadata in the repo rather than in the db
-  * seems like migrations are created sometimes... only started recently, no config changes (???)
-* ws endpoint is same as http endpoint
-  * apollo docs are great for examples and bad for API documentation; can't set credentials: 'include' on ws at all
-* this is a poweful paradigm:
-```sql
-create function get_hasura_user()
-returns jsonb as $$
-  select nullif(current_setting('hasura.user', true), '')::jsonb
-$$ language sql stable;
+### Getting started
 
-create function current_user_id()
-returns integer as $$
-  select case when get_hasura_user() is null
-    then null 
-    else (get_hasura_user()->>'x-hasura-user-id')::integer
-  end
-$$ language sql stable;
-```
+1. Run `yarn` to download project dependencies.
+2. `cp .env.example .env` and fill in details.
+3. Execute the SQL in `bootstrap/` as superuser, first in the `postgres` database and then in the `gbh` database (or whatever you choose to call it).
+4. Make sure your connection string points to the database you just created, then run `pgsh up` to migrate to the latest version.
+5. Run `pgsh psql < seed.sql` to seed the database with some dishes you can order.
+6. `yarn start` to begin the server, which hosts the following:
+    1. the auth webhook
+    2. the auth remote schema
+    3. the cart remote schema
+    4. event webhooks
+7. `docker-compose up` to start the Hasura appliance, which will communicate with our running. You can also view [docker-compose.yaml](docker-compose.yaml) to see what we're passing to the container.
+8. Clone `https://github.com/sastraxi/great-bear-frontend` and follow its setup instructions. Put the following in its `.env`:
+    ```
+    REACT_APP_GRAPHQL_VARIANT=hasura
+    REACT_APP_GRAPHQL_URL=http://localhost:8080/v1/graphql # by default
+    REACT_APP_SUBSCRIPTION_URL=ws://localhost:8080/v1/graphql # by default
+    ```
+9. Run the frontend with `yarn start` as well.
+10. Navigate to http://localhost:3000 (by default).
 
-### Resources
-* https://3factor.app
-* https://github.com/hasura/3factor-example
-* https://docs.hasura.io/1.0/graphql/manual/hasura-cli/install-hasura-cli.html
-* https://medium.com/aherforth/how-to-get-auto-restart-and-breakpoint-support-with-typescript-and-node-5af589dd8687
-* https://spotinst.com/blog/2017/11/19/best-practices-serverless-connection-pooling-database/
+### Current medium-term plan
 
-### Custom actions in Hasura
-I can think of three ways to run some javascript code as a response to a GraphQL mutation:
-
-1. Forward the mutation to a [remote schema](https://docs.hasura.io/1.0/graphql/manual/remote-schemas/index.html).
-2. Similarly, you can proxy to Hasura yourself and stitch in as many other schemas as you'd like.
-3. Trigger on an database event (e.g. `INSERT`) and use the Event Trigger architecture.
-   You essentially create a "work log" for your mutation, where inputs and outputs are columns in your table.
-   Wait for the return value by creating a subscription.
+1. Add error handling
+2. Add some testing
