@@ -1,5 +1,0 @@
-- args:
-    table:
-      name: current_cart
-      schema: public
-  type: untrack_table

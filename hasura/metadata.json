@@ -1,71 +1,170 @@
 {
   "functions": [],
-  "remote_schemas": [],
+  "remote_schemas": [
+    {
+      "name": "cart",
+      "definition": {
+        "url": null,
+        "url_from_env": "CART_SCHEMA_URL",
+        "headers": [],
+        "forward_client_headers": true,
+        "timeout_seconds": 60
+      },
+      "comment": null
+    },
+    {
+      "name": "auth",
+      "definition": {
+        "url": null,
+        "url_from_env": "AUTH_SCHEMA_URL",
+        "headers": [],
+        "forward_client_headers": true,
+        "timeout_seconds": 60
+      },
+      "comment": null
+    }
+  ],
+  "query_collections": [],
+  "allowlist": [],
   "tables": [
     {
       "table": "item",
+      "is_enum": false,
       "object_relationships": [],
-      "array_relationships": [
+      "array_relationships": [],
+      "insert_permissions": [],
+      "select_permissions": [
         {
-          "using": {
-            "foreign_key_constraint_on": {
-              "column": "item_id",
-              "table": "cart_item"
-            }
-          },
-          "name": "cartItemsByitemId",
-          "comment": null
-        },
-        {
-          "using": {
-            "foreign_key_constraint_on": {
-              "column": "item_id",
-              "table": "order_item"
-            }
-          },
-          "name": "orderItemsByitemId",
-          "comment": null
+          "role": "user",
+          "comment": null,
+          "permission": {
+            "allow_aggregations": false,
+            "columns": [
+              "amount",
+              "id",
+              "category",
+              "description",
+              "name"
+            ],
+            "filter": {}
+          }
         }
       ],
-      "insert_permissions": [],
-      "select_permissions": [],
       "update_permissions": [],
       "delete_permissions": [],
       "event_triggers": []
     },
     {
       "table": "cart_item",
+      "is_enum": false,
       "object_relationships": [
         {
           "using": {
             "foreign_key_constraint_on": "cart_id"
           },
-          "name": "cartBycartId",
+          "name": "cart",
           "comment": null
         },
         {
           "using": {
             "foreign_key_constraint_on": "item_id"
           },
-          "name": "itemByitemId",
+          "name": "item",
           "comment": null
         }
       ],
       "array_relationships": [],
-      "insert_permissions": [],
-      "select_permissions": [],
-      "update_permissions": [],
-      "delete_permissions": [],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "comment": null,
+          "permission": {
+            "set": {},
+            "check": {
+              "cart": {
+                "user_id": {
+                  "_eq": "X-Hasura-User-Id"
+                }
+              }
+            },
+            "columns": [
+              "id",
+              "cart_id",
+              "item_id",
+              "quantity"
+            ]
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "comment": null,
+          "permission": {
+            "columns": [
+              "id",
+              "cart_id",
+              "item_id",
+              "quantity"
+            ],
+            "filter": {
+              "cart": {
+                "user_id": {
+                  "_eq": "X-Hasura-User-Id"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "update_permissions": [
+        {
+          "role": "user",
+          "comment": null,
+          "permission": {
+            "set": {},
+            "columns": [
+              "id",
+              "cart_id",
+              "item_id",
+              "quantity"
+            ],
+            "filter": {
+              "cart": {
+                "user_id": {
+                  "_eq": "X-Hasura-User-Id"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "delete_permissions": [
+        {
+          "role": "user",
+          "comment": null,
+          "permission": {
+            "filter": {
+              "cart": {
+                "user_id": {
+                  "_eq": "X-Hasura-User-Id"
+                }
+              }
+            }
+          }
+        }
+      ],
       "event_triggers": []
     },
     {
       "table": "order",
+      "is_enum": false,
       "object_relationships": [
         {
           "using": {
             "foreign_key_constraint_on": "user_id"
           },
-          "name": "userByuserId",
+          "name": "user",
           "comment": null
         }
       ],
@@ -77,46 +176,64 @@
               "table": "order_item"
             }
           },
-          "name": "orderItemsByorderId",
+          "name": "items",
           "comment": null
         }
       ],
-      "insert_permissions": [],
-      "select_permissions": [],
+      "insert_permissions": [
+        {
+          "role": "user",
+          "comment": null,
+          "permission": {
+            "set": {
+              "user_id": "x-hasura-User-Id"
+            },
+            "check": {
+              "user_id": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            },
+            "columns": [
+              "amount",
+              "cart_id",
+              "stripe_token"
+            ]
+          }
+        }
+      ],
+      "select_permissions": [
+        {
+          "role": "user",
+          "comment": null,
+          "permission": {
+            "allow_aggregations": false,
+            "columns": [
+              "amount",
+              "authorized_at",
+              "captured_at",
+              "cooked_at",
+              "created_at",
+              "delivered_at",
+              "error",
+              "failed_at",
+              "id",
+              "modified_at",
+              "user_id",
+              "verified_at"
+            ],
+            "filter": {
+              "user_id": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            }
+          }
+        }
+      ],
       "update_permissions": [],
       "delete_permissions": [],
       "event_triggers": [
         {
-          "webhook_from_env": "WAITER_WEBHOOK_URL",
-          "headers": [],
-          "name": "waiter",
-          "definition": {
-            "insert": {
-              "columns": [
-                "id",
-                "user_id",
-                "stripe_charge",
-                "amount",
-                "iso_currency",
-                "failure_message",
-                "latlon",
-                "created_at",
-                "modified_at",
-                "failed_at",
-                "verified_at",
-                "captured_at",
-                "cooked_at",
-                "delivered_at"
-              ]
-            }
-          },
-          "retry_conf": {
-            "num_retries": 0,
-            "interval_sec": 10
-          }
-        },
-        {
-          "webhook": "CAPTURE_WEBHOOK_URL",
+          "webhook_from_env": "CAPTURE_WEBHOOK_URL",
           "headers": [],
           "name": "capture",
           "definition": {
@@ -124,7 +241,8 @@
               "columns": [
                 "verified_at"
               ]
-            }
+            },
+            "enable_manual": false
           },
           "retry_conf": {
             "num_retries": 0,
@@ -132,7 +250,7 @@
           }
         },
         {
-          "webhook": "CHEF_WEBHOOK_URL",
+          "webhook_from_env": "CHEF_WEBHOOK_URL",
           "headers": [],
           "name": "chef",
           "definition": {
@@ -140,7 +258,8 @@
               "columns": [
                 "captured_at"
               ]
-            }
+            },
+            "enable_manual": false
           },
           "retry_conf": {
             "num_retries": 0,
@@ -148,7 +267,7 @@
           }
         },
         {
-          "webhook": "DRIVER_WEBHOOK_URL",
+          "webhook_from_env": "DRIVER_WEBHOOK_URL",
           "headers": [],
           "name": "driver",
           "definition": {
@@ -156,9 +275,43 @@
               "columns": [
                 "cooked_at"
               ]
-            }
+            },
+            "enable_manual": false
           },
           "retry_conf": {
+            "num_retries": 0,
+            "interval_sec": 10
+          }
+        },
+        {
+          "webhook_from_env": "WAITER_WEBHOOK_URL",
+          "headers": [],
+          "name": "waiter",
+          "definition": {
+            "update": {
+              "columns": [
+                "authorized_at"
+              ]
+            },
+            "enable_manual": false
+          },
+          "retry_conf": {
+            "num_retries": 0,
+            "interval_sec": 10
+          }
+        },
+        {
+          "webhook_from_env": "CREATE_ORDER_WEBHOOK_URL",
+          "headers": [],
+          "name": "create_order",
+          "definition": {
+            "insert": {
+              "columns": "*"
+            },
+            "enable_manual": false
+          },
+          "retry_conf": {
+            "timeout_sec": 60,
             "num_retries": 0,
             "interval_sec": 10
           }
@@ -166,80 +319,61 @@
       ]
     },
     {
-      "table": "email",
-      "object_relationships": [
-        {
-          "using": {
-            "foreign_key_constraint_on": "user_id"
-          },
-          "name": "userByuserId",
-          "comment": null
-        }
-      ],
-      "array_relationships": [],
-      "insert_permissions": [],
-      "select_permissions": [],
-      "update_permissions": [],
-      "delete_permissions": [],
-      "event_triggers": [
-        {
-          "webhook": "EMAIL_WEBHOOK_URL",
-          "headers": [],
-          "name": "email",
-          "definition": {
-            "insert": {
-              "columns": [
-                "id",
-                "user_id",
-                "recipient",
-                "template",
-                "props",
-                "created_at",
-                "sent_at",
-                "sent_mime"
-              ]
-            }
-          },
-          "retry_conf": {
-            "num_retries": 4,
-            "interval_sec": 15
-          }
-        }
-      ]
-    },
-    {
       "table": "order_item",
+      "is_enum": false,
       "object_relationships": [
         {
           "using": {
             "foreign_key_constraint_on": "item_id"
           },
-          "name": "itemByitemId",
+          "name": "item",
           "comment": null
         },
         {
           "using": {
             "foreign_key_constraint_on": "order_id"
           },
-          "name": "orderByorderId",
+          "name": "order",
           "comment": null
         }
       ],
       "array_relationships": [],
       "insert_permissions": [],
-      "select_permissions": [],
+      "select_permissions": [
+        {
+          "role": "user",
+          "comment": null,
+          "permission": {
+            "allow_aggregations": false,
+            "columns": [
+              "id",
+              "order_id",
+              "item_id",
+              "quantity"
+            ],
+            "filter": {
+              "order": {
+                "user_id": {
+                  "_eq": "X-Hasura-User-Id"
+                }
+              }
+            }
+          }
+        }
+      ],
       "update_permissions": [],
       "delete_permissions": [],
       "event_triggers": []
     },
     {
       "table": "cart",
+      "is_enum": false,
       "object_relationships": [
         {
           "using": {
             "foreign_key_constraint_on": "user_id"
           },
-          "name": "userByuserId",
+          "name": "user",
           "comment": null
         }
       ],
@@ -251,40 +385,41 @@
               "table": "cart_item"
             }
           },
-          "name": "cartItemsBycartId",
+          "name": "cartItems",
           "comment": null
         }
       ],
       "insert_permissions": [],
-      "select_permissions": [],
+      "select_permissions": [
+        {
+          "role": "user",
+          "comment": null,
+          "permission": {
+            "allow_aggregations": false,
+            "columns": [
+              "id",
+              "user_id",
+              "session_id",
+              "created_at",
+              "modified_at"
+            ],
+            "filter": {
+              "user_id": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            }
+          }
+        }
+      ],
       "update_permissions": [],
       "delete_permissions": [],
       "event_triggers": []
     },
     {
       "table": "user",
+      "is_enum": false,
       "object_relationships": [],
       "array_relationships": [
-        {
-          "using": {
-            "foreign_key_constraint_on": {
-              "column": "user_id",
-              "table": "cart"
-            }
-          },
-          "name": "cartsByuserId",
-          "comment": null
-        },
-        {
-          "using": {
-            "foreign_key_constraint_on": {
-              "column": "user_id",
-              "table": "email"
-            }
-          },
-          "name": "emailsByuserId",
-          "comment": null
-        },
         {
           "using": {
             "foreign_key_constraint_on": {
@@ -292,16 +427,76 @@
               "table": "order"
             }
           },
-          "name": "ordersByuserId",
+          "name": "orders",
           "comment": null
         }
       ],
       "insert_permissions": [],
-      "select_permissions": [],
+      "select_permissions": [
+        {
+          "role": "user",
+          "comment": null,
+          "permission": {
+            "allow_aggregations": false,
+            "columns": [
+              "created_at",
+              "email",
+              "id",
+              "modified_at",
+              "points"
+            ],
+            "limit": 1,
+            "filter": {
+              "id": {
+                "_eq": "X-Hasura-User-Id"
+              }
+            }
+          }
+        }
+      ],
+      "update_permissions": [],
+      "delete_permissions": [],
+      "event_triggers": []
+    },
+    {
+      "table": "current_cart",
+      "is_enum": false,
+      "object_relationships": [],
+      "array_relationships": [
+        {
+          "using": {
+            "manual_configuration": {
+              "remote_table": "cart_item",
+              "column_mapping": {
+                "id": "cart_id"
+              }
+            }
+          },
+          "name": "cartItems",
+          "comment": null
+        }
+      ],
+      "insert_permissions": [],
+      "select_permissions": [
+        {
+          "role": "user",
+          "comment": null,
+          "permission": {
+            "allow_aggregations": false,
+            "columns": [
+              "id",
+              "user_id",
+              "session_id",
+              "created_at",
+              "modified_at"
+            ],
+            "filter": {}
+          }
+        }
+      ],
       "update_permissions": [],
       "delete_permissions": [],
       "event_triggers": []
     }
-  ],
-  "query_templates": []
+  ]
 }

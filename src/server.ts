@@ -5,7 +5,8 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 
 import serviceRoutes from './service/routes';
-import applyPassport from './auth/passport';
+import applyPassport from './auth/setup';
+import applyAuthSchema from './auth';
 import applyCartSchema from './cart';
 
 import knex from './db/knex';
@@ -34,10 +35,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 applyPassport(app, knex);
+applyAuthSchema(app, knex);
 applyCartSchema(app, knex);
 app.use('/u', serviceRoutes(knex));
 app.get('/', (req, res) => {
-  req.session.abc = 123; // FIXME: delete this once we're actually logging in
+  // do we need this anymore?
+  // req.session.abc = 123; // FIXME: delete this once we're actually logging in
   res.status(200).send('OK');
 });
 
