@@ -2,7 +2,7 @@
   "functions": [],
   "remote_schemas": [
     {
-      "name": "cart",
+      "name": "Cart",
       "definition": {
         "url": null,
         "url_from_env": "CART_SCHEMA_URL",
@@ -40,11 +40,12 @@
           "permission": {
             "allow_aggregations": false,
             "columns": [
-              "amount",
               "id",
+              "name",
               "category",
               "description",
-              "name"
+              "amount",
+              "image_url"
             ],
             "filter": {}
           }
@@ -176,7 +177,7 @@
               "table": "order_item"
             }
           },
-          "name": "items",
+          "name": "orderItems",
           "comment": null
         }
       ],
@@ -188,14 +189,11 @@
             "set": {
               "user_id": "x-hasura-User-Id"
             },
-            "check": {
-              "user_id": {
-                "_eq": "X-Hasura-User-Id"
-              }
-            },
+            "check": {},
             "columns": [
               "amount",
               "cart_id",
+              "destination_latlon",
               "stripe_token"
             ]
           }
@@ -211,9 +209,12 @@
               "amount",
               "authorized_at",
               "captured_at",
+              "cart_id",
               "cooked_at",
               "created_at",
+              "current_latlon",
               "delivered_at",
+              "destination_latlon",
               "error",
               "failed_at",
               "id",
@@ -397,15 +398,14 @@
           "permission": {
             "allow_aggregations": false,
             "columns": [
-              "id",
-              "user_id",
-              "session_id",
               "created_at",
-              "modified_at"
+              "id",
+              "modified_at",
+              "user_id"
             ],
             "filter": {
-              "user_id": {
-                "_eq": "X-Hasura-User-Id"
+              "session_id": {
+                "_eq": "X-Hasura-Session-Id"
               }
             }
           }
@@ -451,46 +451,6 @@
                 "_eq": "X-Hasura-User-Id"
               }
             }
-          }
-        }
-      ],
-      "update_permissions": [],
-      "delete_permissions": [],
-      "event_triggers": []
-    },
-    {
-      "table": "current_cart",
-      "is_enum": false,
-      "object_relationships": [],
-      "array_relationships": [
-        {
-          "using": {
-            "manual_configuration": {
-              "remote_table": "cart_item",
-              "column_mapping": {
-                "id": "cart_id"
-              }
-            }
-          },
-          "name": "cartItems",
-          "comment": null
-        }
-      ],
-      "insert_permissions": [],
-      "select_permissions": [
-        {
-          "role": "user",
-          "comment": null,
-          "permission": {
-            "allow_aggregations": false,
-            "columns": [
-              "id",
-              "user_id",
-              "session_id",
-              "created_at",
-              "modified_at"
-            ],
-            "filter": {}
           }
         }
       ],
