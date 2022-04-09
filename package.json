@@ -28,7 +28,7 @@
     "graphql-resolvers": "^0.3.3",
     "knex": "^0.19.5",
     "lodash": "^4.17.15",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "objection": "^1.6.11",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
